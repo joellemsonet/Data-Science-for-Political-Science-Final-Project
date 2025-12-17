@@ -1,0 +1,105 @@
+---
+title: "Final Project"
+author: "Joelle Sonet"
+date: "2025-12-05"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, out.width="95%")
+```
+
+# Final Project Code and Explanations
+
+```{r}
+
+## Loading abortion dataset
+library(readr)
+AbortionData <- read_csv("AbortionData.csv")
+
+## Checking number of rows and columns
+ncol(AbortionData)
+nrow(AbortionData)
+
+## Subsetting data to include only the columns I will use for my analysis (state, number of abortions in 2020, number of abortions in 2023, difference in number of abortions)
+AbortionData1 <- subset(AbortionData, 
+                           select = c(state, halfyear_2020, jantojune_2023, difference_in_number_of_abortions))
+head(AbortionData1)
+
+## Chcekcing number of rows and columns in new dataset
+nrow(AbortionData1)
+ncol(AbortionData1)
+
+## Adding a column to represent whether states were won by Trump (1 = treatment) or Hillary (0 = control) in 2016 presidential election
+AbortionData1$Results_2016 <- NA
+
+AbortionData1$Results_2016[AbortionData$state=="FL"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="MS"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="GA"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="SC"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="NC"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="PA"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="OH"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="IN"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="KS"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="MI"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="IA"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="NE"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="AK"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="AZ"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="UT"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="WY"] <- 1
+AbortionData1$Results_2016[AbortionData$state=="MT"] <- 1
+
+AbortionData1$Results_2016[AbortionData$state=="WA"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="OR"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="CA"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="NV"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="CO"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="NM"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="MN"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="IL"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="VA"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="NJ"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="MD"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="DE"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="CT"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="NY"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="MA"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="NH"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="VT"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="ME"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="RI"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="HI"] <- 0
+AbortionData1$Results_2016[AbortionData$state=="DC"] <- 0
+
+## Subsetting states into "Trump States" (those won by Trump in 2016) and "Hillary States" (those won by Hillary in 2016)
+Trump_States <- subset(AbortionData1, Results_2016 == 1)
+Hillary_States <- subset(AbortionData1, Results_2016 == 0)
+
+## Taking average difference in abortion rates for all "Trump states"
+TrumpAbortionsDiff <- mean(Trump_States$difference_in_number_of_abortions)
+TrumpAbortionsDiff
+
+## Taking average difference in abortion rates for all "Hillary states"
+HillaryAbortionsDiff <- mean(Hillary_States$difference_in_number_of_abortions)
+HillaryAbortionsDiff
+
+## Using difference in means approach to compare difference in number of abortions between 2020 and 2023 in Trump states vs. Hillary states
+AbortionDiff <- TrumpAbortionsDiff - HillaryAbortionsDiff
+AbortionDiff
+
+## Creating barplot to illustrate difference in abortion rates for "Trump States" and "Hillary States" as well as the difference between them (ATE)
+valuesbar <- c(1393.75, 4093.333)
+
+namesbar <- c("States Won By Trump",
+              "States Won By Hillary")
+
+barplot(valuesbar,
+        names=namesbar,
+        cex.names = .9,
+        main="Difference in Abortions from 2020 to 2023 in States Won by Trump vs. Hillary", cex.main = .9, ylab="Difference in Number of Abortions",
+        cex.lab = .9, ylim = c(0,5000), col = c("red3", "dodgerblue"))
+
+```
